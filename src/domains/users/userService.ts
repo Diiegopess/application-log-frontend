@@ -1,5 +1,5 @@
 import apiClient from '../../core/api/apiClient';
-import type { User } from './user.types';
+import type { User, UserUpdateAdminPayload } from './user.types';
 
 export async function fetchMe(): Promise<User> {
   const resp = await apiClient.get<User>('/users/me');
@@ -13,5 +13,13 @@ export async function fetchUsers(): Promise<User[]> {
 
 export async function fetchUser(id: string): Promise<User> {
   const resp = await apiClient.get<User>(`/users/${id}`);
+  return resp.data;
+}
+
+export async function updateUserAdmin(
+  id: string,
+  payload: UserUpdateAdminPayload
+): Promise<User> {
+  const resp = await apiClient.patch<User>(`/users/${id}`, payload);
   return resp.data;
 }
