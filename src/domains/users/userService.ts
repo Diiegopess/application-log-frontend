@@ -1,8 +1,8 @@
 import apiClient from '../../core/api/apiClient';
-import type { User, UserUpdateAdminPayload } from './user.types';
+import type { User, UserUpdateAdminPayload, UserCreatePayload } from './user.types';
 
-export async function fetchMe(): Promise<User> {
-  const resp = await apiClient.get<User>('/users/me');
+export async function createUser(payload: UserCreatePayload): Promise<User> {
+  const resp = await apiClient.post<User>('/users', payload);
   return resp.data;
 }
 

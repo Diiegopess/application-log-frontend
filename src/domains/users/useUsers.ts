@@ -1,12 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { User, UserUpdateAdminPayload } from './user.types';
-import { fetchUsers, updateUserAdmin } from './userService';
+import type { User, UserUpdateAdminPayload, UserCreatePayload } from './user.types';
+import { fetchUsers, updateUserAdmin, createUser } from './userService';
 
 export const useUsers = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
+  const [creating, setCreating] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
 
   const loadUsers = useCallback(async () => {
     try {
@@ -22,6 +24,24 @@ export const useUsers = () => {
       setLoading(false);
     }
   }, []);
+
+  const addUser = async (payload: UserCreatePayload) => {
+    try {
+      setCreating(true);
+      setError(null);
+      await createUser(payload);
+      await loadUsers(); // Refresca la tabla tras registrar
+      setIsCreateModalOpen(false);
+    } catch (err: any) {
+      const msg =
+        err.response?.data?.detail ||
+        err.response?.data?.message ||
+        'Error al registrar usuario';
+      throw new Error(msg);
+    } finally {
+      setCreating(false);
+    }
+  };
 
   const updateUser = async (id: string, payload: UserUpdateAdminPayload) => {
     try {
@@ -59,8 +79,12 @@ export const useUsers = () => {
   return {
     users,
     loading,
+    creating,
     actionLoadingId,
     error,
+    isCreateModalOpen,
+    setIsCreateModalOpen,
+    addUser,
     refetch: loadUsers,
     toggleUserStatus,
     toggleUserRole,

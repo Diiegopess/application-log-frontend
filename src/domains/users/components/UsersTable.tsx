@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import type { User } from './user.types';
-import { useAuth } from '../auth/AuthContext';
+import type { User } from '../user.types';
 
 interface UsersTableProps {
   users: User[];
+  currentUserId?: string;
   actionLoadingId?: string | null;
   onToggleStatus?: (user: User) => void;
   onToggleRole?: (user: User) => void;
@@ -11,15 +11,14 @@ interface UsersTableProps {
 
 export const UsersTable: React.FC<UsersTableProps> = ({
   users,
+  currentUserId,
   actionLoadingId,
   onToggleStatus,
   onToggleRole,
 }) => {
-  const { user: currentUser } = useAuth();
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
-  // Cerrar el dropdown al hacer clic fuera
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -52,7 +51,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
         </thead>
         <tbody className="divide-y divide-gray-200">
           {users.map((u) => {
-            const isSelf = currentUser?.sub === u.id;
+            const isSelf = Boolean(currentUserId && currentUserId === u.id);
             const isProcessing = actionLoadingId === u.id;
             const isOpen = openDropdownId === u.id;
 
@@ -70,7 +69,6 @@ export const UsersTable: React.FC<UsersTableProps> = ({
                   {u.email}
                 </td>
 
-                {/* Columna de Rol con Dropdown Flotante hacia abajo */}
                 <td className="px-5 py-4 text-center">
                   {isSelf ? (
                     <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-700 border border-purple-200">
@@ -99,7 +97,6 @@ export const UsersTable: React.FC<UsersTableProps> = ({
                         </svg>
                       </button>
 
-                      {/* Menú Desplegado Hacia Abajo */}
                       {isOpen && (
                         <div className="absolute left-1/2 -translate-x-1/2 top-full mt-1.5 w-32 rounded-xl bg-white shadow-2xl ring-1 ring-black/10 p-1 z-50 animate-in fade-in zoom-in-95 duration-100">
                           <button
@@ -128,7 +125,6 @@ export const UsersTable: React.FC<UsersTableProps> = ({
                   )}
                 </td>
 
-                {/* Columna de Estado */}
                 <td className="px-5 py-4 text-center">
                   <span
                     className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
@@ -141,7 +137,6 @@ export const UsersTable: React.FC<UsersTableProps> = ({
                   </span>
                 </td>
 
-                {/* Columna de Acciones */}
                 <td className="px-5 py-4 text-right whitespace-nowrap">
                   <button
                     onClick={() => onToggleStatus && onToggleStatus(u)}

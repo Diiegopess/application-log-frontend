@@ -1,19 +1,17 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { LoginResponse, AuthUser } from './auth.types';
 import { setAuthToken, clearAuthToken, getAuthToken } from '../../core/tokenHelper';
-import { fetchMe } from '../users/userService';
+import { fetchCurrentProfile, logoutSession } from './authService';
 
 type AuthContextValue = {
   user: AuthUser | null;
   loading: boolean;
   login: (payload: LoginResponse) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   refreshUserProfile: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
-
-
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -21,13 +19,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const loadUserProfile = async () => {
     try {
-      const profile = await fetchMe();
-      setUser({
-        sub: profile.id,
-        email: profile.email,
-        full_name: profile.full_name || profile.email.split('@')[0],
-        is_superuser: profile.is_superuser,
-      });
+      const profile = await fetchCurrentProfile();
+      setUser(profile);
     } catch {
       clearAuthToken();
       setUser(null);
@@ -41,7 +34,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } else {
       setLoading(false);
     }
-    
   }, []);
 
   const login = async (payload: LoginResponse) => {
@@ -49,9 +41,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await loadUserProfile();
   };
 
-  const logout = () => {
-    clearAuthToken();
-    setUser(null);
+  const logout = async () => {
+    try {
+      await logoutSession();
+    } catch {
+      // Si falla la revocación en backend, limpiamos localmente de todos modos
+    } finally {
+      clearAuthToken();
+      setUser(null);
+    }
   };
 
   const refreshUserProfile = async () => {

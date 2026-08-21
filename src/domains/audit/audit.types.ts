@@ -16,4 +16,6 @@ export interface LogFilter {
   limit?: number;
   event_type?: string;
   user_id?: string;
+  from_date?: string;
+  to_date?: string;
 }

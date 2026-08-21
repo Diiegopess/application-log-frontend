@@ -13,3 +13,11 @@ export interface UserUpdateAdminPayload {
   is_active?: boolean;
   is_superuser?: boolean;
 }
+
+export interface UserCreatePayload {
+  email: string;
+  password: string;
+  first_name?: string;
+  last_name?: string;
+  is_superuser?: boolean;
+}

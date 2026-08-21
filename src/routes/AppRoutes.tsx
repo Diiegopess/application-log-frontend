@@ -7,9 +7,6 @@ import { UsersPage } from '../pages/UsersPage';
 import { AuditPage } from '../pages/AuditPage';
 import ProtectedRoute from './ProtectedRoute';
 
-/**
- * MAPA PRINCIPAL DE RUTAS DE LA APLICACIÓN
- */
 export const AppRoutes: React.FC = () => {
   const { user } = useAuth();
 
@@ -20,6 +17,7 @@ export const AppRoutes: React.FC = () => {
         element={user ? <Navigate to="/dashboard" replace /> : <LoginPage />}
       />
 
+      {/* Ruta autenticada base (cualquier usuario activo) */}
       <Route
         path="/dashboard"
         element={
@@ -29,10 +27,11 @@ export const AppRoutes: React.FC = () => {
         }
       />
 
+      {/* Rutas administrativas exclusivas (is_superuser: true) */}
       <Route
         path="/users"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requireSuperuser>
             <UsersPage />
           </ProtectedRoute>
         }
@@ -41,7 +40,7 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/audit"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requireSuperuser>
             <AuditPage />
           </ProtectedRoute>
         }
@@ -54,3 +53,5 @@ export const AppRoutes: React.FC = () => {
     </Routes>
   );
 };
+
+export default AppRoutes;

@@ -1,18 +1,36 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../domains/auth/AuthContext';
-import { Loader2 } from 'lucide-react';
+import Spinner from '../shared/components/Spinner';
 
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+  requireSuperuser?: boolean;
+}
+
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
+  children,
+  requireSuperuser = false,
+}) => {
   const { loading, user } = useAuth();
 
-  if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-    </div>
-  );
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Spinner />
+      </div>
+    );
+  }
 
-  if (!user) return <Navigate to="/login" replace />;
+  // Si no está autenticado, va al login
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // Si la ruta requiere privilegios de superusuario y no los tiene, redirige a dashboard
+  if (requireSuperuser && !user.is_superuser) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   return <>{children}</>;
 };

@@ -1,6 +1,6 @@
 import React from 'react';
-import type { AuditLog } from './audit.types';
-import { formatDate } from '../../shared/utils/formatDate';
+import type { AuditLog } from '../audit.types';
+import { formatDate } from '../../../shared/utils/formatDate';
 
 interface AuditDetailModalProps {
   log: AuditLog | null;
@@ -24,7 +24,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({ log, onClose
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 rounded-lg p-2 hover:bg-gray-100 transition-colors text-xl leading-none"
+            className="text-gray-400 hover:text-gray-600 rounded-lg p-2 hover:bg-gray-100 transition-colors text-xl leading-none cursor-pointer"
             aria-label="Cerrar"
           >
             &times;
@@ -33,10 +33,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({ log, onClose
 
         {/* Cuerpo */}
         <div className="p-6 overflow-y-auto space-y-5 text-sm">
-          
-          {/* Grilla de Metadatos */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            
             <div className="bg-gray-50 p-3 rounded-lg border border-gray-100">
               <span className="text-xs font-medium text-gray-500 uppercase tracking-wider block mb-1">
                 ID del Registro
@@ -94,10 +91,8 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({ log, onClose
                 </p>
               </div>
             )}
-
           </div>
 
-          {/* Bloque JSON */}
           <div>
             <span className="text-xs font-medium text-gray-500 uppercase tracking-wider block mb-2">
               Payload (JSON)
@@ -106,14 +101,13 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({ log, onClose
               {log.payload ? JSON.stringify(log.payload, null, 2) : '// Sin datos de payload'}
             </pre>
           </div>
-
         </div>
 
         {/* Footer */}
         <div className="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-end">
           <button
             onClick={onClose}
-            className="px-5 py-2 bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 text-sm font-medium rounded-lg transition-colors shadow-xs"
+            className="px-5 py-2 bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 text-sm font-medium rounded-lg transition-colors shadow-xs cursor-pointer"
           >
             Cerrar
           </button>

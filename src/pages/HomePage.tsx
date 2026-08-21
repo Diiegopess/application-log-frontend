@@ -1,5 +1,5 @@
 import React from 'react';
-import GoogleLoginButton from '../domains/auth/GoogleLoginButton';
+import GoogleLoginButton from '../domains/auth/components/GoogleLoginButton';
 
 export const HomePage: React.FC = () => {
   return (
